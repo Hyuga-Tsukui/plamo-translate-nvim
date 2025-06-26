@@ -15,6 +15,8 @@ function M.setup()
 		vim.notify(("failed to spawn: %s"):format(err), vim.log.levels.ERROR)
 		return
 	end
+
+	require("plamo-translate-nvim.server").setup()
 	require("plamo-translate-nvim.server").start()
 	require("plamo-translate-nvim.commands").setup()
 end

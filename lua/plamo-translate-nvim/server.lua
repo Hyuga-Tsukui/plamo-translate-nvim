@@ -3,19 +3,6 @@ local M = {}
 local server_handle = nil
 local stdout_acc = {}
 
-function M.stop()
-	if server_handle and not server_handle.completed then
-		local ok, err = pcall(function()
-			server_handle:kill("sigterm")
-		end)
-		if not ok then
-			vim.schedule(function()
-				vim.notify("[plamo] failed to kill server: " .. tostring(err), vim.log.levels.WARN)
-			end)
-		end
-	end
-end
-
 function M.start()
 	if server_handle and server_handle:is_pending() then
 		return
@@ -57,7 +44,22 @@ function M.start()
 			end
 		end)
 	end)
+end
 
+function M.stop()
+	if server_handle and not server_handle.completed then
+		local ok, err = pcall(function()
+			server_handle:kill("sigterm")
+		end)
+		if not ok then
+			vim.schedule(function()
+				vim.notify("[plamo] failed to kill server: " .. tostring(err), vim.log.levels.WARN)
+			end)
+		end
+	end
+end
+
+function M.setup()
 	vim.api.nvim_create_autocmd("VimLeavePre", {
 		callback = function()
 			M.stop()
