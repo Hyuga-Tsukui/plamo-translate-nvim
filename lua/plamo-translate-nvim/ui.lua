@@ -5,20 +5,39 @@ local spinner_index = 1
 local spinner_symbols = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
 
 function M.open()
-	if not buf or not vim.api.nvim_buf_is_valid(buf) then
+	if buf and vim.api.nvim_buf_is_valid(buf) then
+	else
 		buf = vim.api.nvim_create_buf(false, true)
 	end
 
-	if not win or not vim.api.nvim_win_is_valid(win) then
-		win = vim.api.nvim_open_win(buf, true, {
-			relative = "editor",
-			width = math.floor(vim.o.columns * 0.8),
-			height = math.floor(vim.o.lines * 0.8),
-			row = math.floor((vim.o.lines - vim.o.lines * 0.8) / 2),
-			col = math.floor((vim.o.columns - vim.o.columns * 0.8) / 2),
-			border = "rounded",
-			style = "minimal",
-		})
+	if win and vim.api.nvim_win_is_valid(win) then
+		return
+	end
+
+	vim.cmd("botright split")
+	win = vim.api.nvim_get_current_win()
+	vim.api.nvim_win_set_buf(win, buf)
+
+	vim.wo[win].number = false
+	vim.wo[win].relativenumber = false
+
+	vim.bo[buf].buftype = "nofile"
+	vim.bo[buf].bufhidden = "wipe"
+	vim.bo[buf].swapfile = false
+end
+
+function M.close()
+	if win and vim.api.nvim_win_is_valid(win) then
+		vim.api.nvim_win_close(win, true)
+		win = nil
+	end
+end
+
+function M.toggle()
+	if win and vim.api.nvim_win_is_valid(win) then
+		M.close()
+	else
+		M.open()
 	end
 end
 
@@ -29,6 +48,7 @@ function M.clear()
 end
 
 function M.start_spinner()
+	M.open()
 	M.clear()
 	spinner_index = 1
 	vim.api.nvim_buf_set_lines(buf, 0, -1, false, { spinner_symbols[spinner_index] })
