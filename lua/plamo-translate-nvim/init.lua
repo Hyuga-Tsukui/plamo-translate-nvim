@@ -3,9 +3,13 @@ local M = {}
 function M.setup()
 	local ok, err_or_job = pcall(vim.system, { "plamo-translate", "-v" }, { text = true }, function(job)
 		if job.code == 0 then
-			vim.notify("plamo-translate-nvim is using " .. job.stdout:gsub("\n", ""), vim.log.levels.INFO)
+			vim.schedule(function()
+				vim.notify("plamo-translate-nvim is using " .. job.stdout:gsub("\n", ""), vim.log.levels.INFO)
+			end)
 		else
-			vim.notify(("code: %d, stderr: %s"):format(job.code, job.stderr:gsub("\n", " ")), vim.log.levels.ERROR)
+			vim.schedule(function()
+				vim.notify(("code: %d, stderr: %s"):format(job.code, job.stderr:gsub("\n", " ")), vim.log.levels.ERROR)
+			end)
 			return
 		end
 	end)

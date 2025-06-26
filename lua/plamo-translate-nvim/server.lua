@@ -4,7 +4,8 @@ local server_handle = nil
 local stdout_acc = {}
 
 function M.start()
-	if server_handle and server_handle:is_pending() then
+	if server_handle and not server_handle.completed then
+		vim.notify("[plamo] server is already running", vim.log.levels.INFO)
 		return
 	end
 
@@ -55,7 +56,17 @@ function M.stop()
 			vim.schedule(function()
 				vim.notify("[plamo] failed to kill server: " .. tostring(err), vim.log.levels.WARN)
 			end)
+		else
+			vim.schedule(function()
+				vim.notify("[plamo] server stopped", vim.log.levels.INFO)
+			end)
 		end
+		server_handle = nil
+	elseif server_handle and server_handle.completed then
+		vim.notify("[plamo] server is already stopped", vim.log.levels.INFO)
+		server_handle = nil
+	else
+		vim.notify("[plamo] no server to stop", vim.log.levels.INFO)
 	end
 end
 
