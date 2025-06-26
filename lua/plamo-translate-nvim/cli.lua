@@ -1,5 +1,4 @@
 local M = {}
-local uv = vim.uv
 
 local function get_visual_selection_text()
 	local lines = vim.fn.getline("'<", "'>")
@@ -20,44 +19,39 @@ function M.translate_selection()
 	ui.open()
 	ui.start_spinner()
 
-	local stdout = uv.new_pipe(false)
-	local stderr = uv.new_pipe(false)
-
 	local first_chunk_received = false
 
-	local handle
-	handle = uv.spawn("plamo-translate", {
-		args = { "--input", text },
-		stdio = { nil, stdout, stderr },
-	}, function()
-		stdout:close()
-		stderr:close()
-		if handle then
-			handle:close()
-		end
-	end)
-
-	stdout:read_start(function(err, data)
-		assert(not err, err)
-		if data then
-			vim.schedule(function()
-				if not first_chunk_received then
-					ui.stop_spinner()
-					first_chunk_received = true
-				end
-				ui.update(data)
-			end)
-		end
-	end)
-
-	stderr:read_start(function(err, data)
-		assert(not err, err)
-		if data then
-			vim.schedule(function()
-				vim.notify("[plamo-translate error] " .. data, vim.log.levels.ERROR)
-			end)
-		end
-	end)
+	local _ = vim.system({ "plamo-translate", "--input", text }, {
+		stdin = text,
+		stdout = function(err, data)
+			if err then
+				vim.schedule(function()
+					vim.notify("[plamo-translate stdout error] " .. err, vim.log.levels.ERROR)
+				end)
+				return
+			end
+			if data then
+				vim.schedule(function()
+					if not first_chunk_received then
+						ui.stop_spinner()
+						first_chunk_received = true
+					end
+					ui.update(data)
+				end)
+			end
+		end,
+		stderr = function(err, data)
+			if err then
+				vim.schedule(function()
+					vim.notify("[plamo-translate stderr error] " .. err, vim.log.levels.ERROR)
+				end)
+			elseif data and data ~= "" then
+				vim.schedule(function()
+					vim.notify("[plamo-translate error] " .. data, vim.log.levels.ERROR)
+				end)
+			end
+		end,
+	})
 end
 
 return M

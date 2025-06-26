@@ -1,55 +1,70 @@
 local M = {}
-local Job = require("plenary.job")
 
-local server_job
+local server_handle = nil
+local stdout_acc = {}
 
 function M.start()
-	if server_job and server_job:is_running() then
+	if server_handle and server_handle:is_pending() then
 		return
 	end
 
-	local stdout_lines = {}
+	stdout_acc = {}
 
-	server_job = Job:new({
-		command = "plamo-translate",
-		args = { "server" },
-		on_stdout = function(_, data)
-			if data and data ~= "" then
-				table.insert(stdout_lines, data)
+	server_handle = vim.system({ "plamo-translate", "server" }, {
+		stderr = function(err, data)
+			if err then
+				vim.schedule(function()
+					vim.notify("[plamo] stderr error: " .. tostring(err), vim.log.levels.ERROR)
+				end)
+			elseif data and data ~= "" then
+				vim.schedule(function()
+					-- match log levels based on content
+					-- because plamo-translate server is hosted uvcorn (uvcorn outputs logs to stderr)
+					local level = vim.log.levels.INFO
+					if data:match("ERROR") then
+						level = vim.log.levels.ERROR
+					elseif data:match("WARNING") then
+						level = vim.log.levels.WARN
+					end
+					vim.notify("[plamo] " .. data, level)
+				end)
 			end
 		end,
-		on_exit = function(_, exit_code)
-			vim.schedule(function()
-				local output = table.concat(stdout_lines, "\n")
+	}, function(proc)
+		vim.schedule(function()
+			if proc.code == 0 then
+				vim.notify("[plamo] server exited normally", vim.log.levels.INFO)
+			else
+				local output = table.concat(stdout_acc, "")
 				if output:match("already running") then
-					vim.notify("[plamo-translate-nvim] plamo-translate server is already running", vim.log.levels.INFO)
-				elseif exit_code == 0 then
-					vim.notify("[plamo-translate-nvim] started plamo-translate server", vim.log.levels.INFO)
+					vim.notify("[plamo] server already running", vim.log.levels.INFO)
 				else
-					vim.notify(
-						string.format(
-							"[plamo-translate-nvim] failed to start plamo-translate server (exit code: %d)",
-							exit_code
-						),
-						vim.log.levels.ERROR
-					)
+					vim.notify("[plamo] server exited abnormally (code: " .. proc.code .. ")", vim.log.levels.ERROR)
 				end
-			end)
-		end,
-	})
-
-	server_job:start()
+			end
+		end)
+	end)
 end
 
 function M.stop()
-	if server_job and server_job:is_running() then
-		local ok = pcall(function()
-			server_job:kill()
+	if server_handle and not server_handle.completed then
+		local ok, err = pcall(function()
+			server_handle:kill("sigterm")
 		end)
 		if not ok then
-			vim.notify("[plamo-translate-nvim] Failed to kill server job", vim.log.levels.WARN)
+			vim.schedule(function()
+				vim.notify("[plamo] failed to kill server: " .. tostring(err), vim.log.levels.WARN)
+			end)
 		end
 	end
+end
+
+function M.setup()
+	vim.api.nvim_create_autocmd("VimLeavePre", {
+		callback = function()
+			M.stop()
+		end,
+	})
 end
 
 return M
