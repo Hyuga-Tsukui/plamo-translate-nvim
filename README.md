@@ -12,8 +12,22 @@ This plugin is a simple Neovim wrapper for the excellent [plamo-translate-cli](h
 
 - 🔤 Translate selected text directly in Neovim
 - 📺 Real-time translation display with streaming output
+- 📝 Buffer-based translation results for easy text manipulation
 - 🔄 Automatic server management
 - 🎯 Simple visual selection workflow
+
+## Why Buffer-Based Translation?
+
+Unlike simple popup notifications, this plugin displays translation results in a dedicated buffer, allowing you to:
+
+- **Copy and paste** translated text easily
+- **Edit and refine** translations as needed
+- **Navigate** through long translations with Vim motions
+- **Search** within translation results using `/` and `?`
+- **Save** translations to files for future reference
+- **Use Vim's powerful text manipulation** features on translated content
+
+This approach integrates translation seamlessly into your existing Vim/Neovim workflow.
 
 ## Requirements
 
@@ -70,13 +84,15 @@ lua require("plamo-translate-nvim").setup()
 1. Select text in visual mode
 2. Run `:PlamoTranslateSelection`
 3. View translation in the split window
+4. Use normal Vim operations (copy, edit, search, save) on the translation results
 
 ### Commands
 
-| Command                     | Description                              |
-| --------------------------- | ---------------------------------------- |
-| `:PlamoTranslateSelection`  | Translate currently selected text        |
-| `:PlamoTranslateServerStop` | Manually Stop the plamo-translate server |
+| Command                      | Description                               |
+| ---------------------------- | ----------------------------------------- |
+| `:PlamoTranslateSelection`   | Translate currently selected text         |
+| `:PlamoTranslateServerStart` | Manually start the plamo-translate server |
+| `:PlamoTranslateServerStop`  | Manually stop the plamo-translate server  |
 
 ### Key Mappings (Optional)
 
