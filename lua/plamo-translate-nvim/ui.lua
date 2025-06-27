@@ -54,6 +54,9 @@ function M.start_spinner()
 	vim.api.nvim_buf_set_lines(buf, 0, -1, false, { spinner_symbols[spinner_index] })
 
 	spinner_timer = vim.loop.new_timer()
+	if not spinner_timer then
+		error("Failed to create spinner timer")
+	end
 	spinner_timer:start(
 		0,
 		100,
