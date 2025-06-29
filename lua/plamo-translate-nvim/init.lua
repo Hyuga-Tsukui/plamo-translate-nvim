@@ -5,6 +5,7 @@ local default_config = {
 	confirm_replace = false, -- Whether to show confirmation prompt before replacing text
 	default_action = "display", -- "display" or "replace" - default behavior for translate_selection
 	highlight_duration = 2000, -- Duration in ms to highlight the selection during replacement
+	progress_position = "center", -- "center", "top", "bottom", "cursor" - position of progress floating window
 }
 
 -- Global config storage

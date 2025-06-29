@@ -124,16 +124,25 @@ require("plamo-translate-nvim").setup({
     confirm_replace = false,     -- Show confirmation before replacing text
     default_action = "display",  -- "display" or "replace" - default behavior
     highlight_duration = 2000,   -- Duration (ms) to highlight selection during replacement
+    progress_position = "center", -- "center", "top", "bottom", "cursor" - progress window position
 })
 ```
 
 #### Configuration Options
 
-| Option               | Type    | Default    | Description                                    |
-| -------------------- | ------- | ---------- | ---------------------------------------------- |
-| `confirm_replace`    | boolean | `false`    | Show confirmation prompt before text replacement |
+| Option               | Type    | Default     | Description                                    |
+| -------------------- | ------- | ----------- | ---------------------------------------------- |
+| `confirm_replace`    | boolean | `false`     | Show confirmation prompt before text replacement |
 | `default_action`     | string  | `"display"` | Default behavior: `"display"` or `"replace"`   |
-| `highlight_duration` | number  | `2000`     | Highlight duration in milliseconds during replacement |
+| `highlight_duration` | number  | `2000`      | Highlight duration in milliseconds during replacement |
+| `progress_position`  | string  | `"center"`  | Progress window position: `"center"`, `"top"`, `"bottom"`, `"cursor"` |
+
+#### Progress Position Options
+
+- **`"center"`** (default): Display progress window at screen center
+- **`"top"`**: Display at the top of the screen  
+- **`"bottom"`**: Display above the command line
+- **`"cursor"`**: Display near the current cursor position (automatically adjusts if off-screen)
 
 ## Troubleshooting
 

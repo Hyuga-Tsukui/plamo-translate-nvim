@@ -117,11 +117,40 @@ function M.show_progress(message)
 	-- Set initial content
 	vim.api.nvim_buf_set_lines(progress_buf, 0, -1, false, { message or "🔄 Translating..." })
 	
-	-- Calculate window position (center of screen)
+	-- Get position configuration
+	local config = require("plamo-translate-nvim").config or {}
+	local position = config.progress_position or "center"
+	
+	-- Calculate window position based on configuration
 	local width = 30
 	local height = 1
-	local row = math.floor((vim.o.lines - height) / 2)
-	local col = math.floor((vim.o.columns - width) / 2)
+	local row, col
+	
+	if position == "top" then
+		row = 1
+		col = math.floor((vim.o.columns - width) / 2)
+	elseif position == "bottom" then
+		row = vim.o.lines - height - 3  -- Account for command line
+		col = math.floor((vim.o.columns - width) / 2)
+	elseif position == "cursor" then
+		local cursor_pos = vim.api.nvim_win_get_cursor(0)
+		local win_pos = vim.fn.win_screenpos(0)
+		row = win_pos[1] + cursor_pos[1] - 1
+		col = win_pos[2] + cursor_pos[2] - 1
+		
+		-- Adjust if cursor position would place window off-screen
+		if row + height > vim.o.lines - 2 then
+			row = row - height - 2
+		end
+		if col + width > vim.o.columns then
+			col = vim.o.columns - width - 1
+		end
+		if row < 0 then row = 1 end
+		if col < 0 then col = 0 end
+	else -- default to center
+		row = math.floor((vim.o.lines - height) / 2)
+		col = math.floor((vim.o.columns - width) / 2)
+	end
 	
 	-- Create floating window
 	progress_win = vim.api.nvim_open_win(progress_buf, false, {
