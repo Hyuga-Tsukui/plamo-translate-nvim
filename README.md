@@ -13,8 +13,10 @@ This plugin is a simple Neovim wrapper for the excellent [plamo-translate-cli](h
 - 🔤 Translate selected text directly in Neovim
 - 📺 Real-time translation display with streaming output
 - 📝 Buffer-based translation results for easy text manipulation
+- ✨ **NEW:** In-place text replacement with translation results
 - 🔄 Automatic server management
 - 🎯 Simple visual selection workflow
+- ⚙️ Configurable behavior with confirmation prompts
 
 ## Why Buffer-Based Translation?
 
@@ -58,6 +60,12 @@ First, install the plamo-translate-cli tool:
             desc = "Translate Selection",
             mode = {"v", "n"}
         },
+        {
+            "<leader>tr",
+            "<cmd>PlamoTranslateReplace<cr>",
+            desc = "Replace with Translation",
+            mode = {"v", "n"}
+        },
     },
 }
 ```
@@ -66,16 +74,24 @@ First, install the plamo-translate-cli tool:
 
 ### Basic Workflow
 
+#### Translation Display Mode
 1. Select text in visual mode
 2. Run `:PlamoTranslateSelection`
 3. View translation in the split window
 4. Use normal Vim operations (copy, edit, search, save) on the translation results
+
+#### Translation Replace Mode ✨
+1. Select text in visual mode  
+2. Run `:PlamoTranslateReplace`
+3. Selected text is automatically replaced with the translation result
+4. Visual feedback shows the replaced area with highlighting
 
 ### Commands
 
 | Command                      | Description                               |
 | ---------------------------- | ----------------------------------------- |
 | `:PlamoTranslateSelection`   | Translate currently selected text         |
+| `:PlamoTranslateReplace`     | **NEW:** Replace selected text with translation |
 | `:PlamoTranslateServerStart` | Manually start the plamo-translate server |
 | `:PlamoTranslateServerStop`  | Manually stop the plamo-translate server  |
 
@@ -86,7 +102,9 @@ Add these to your configuration for quicker access:
 ```lua
 -- Example key mappings
 vim.keymap.set("v", "<leader>ts", ":PlamoTranslateSelection<CR>", { desc = "Translate selection" })
-vim.keymap.set("n", "<leader>ts", ":PlamoTranslateSelection<CR>", , { desc = "Translate selection" })
+vim.keymap.set("n", "<leader>ts", ":PlamoTranslateSelection<CR>", { desc = "Translate selection" })
+vim.keymap.set("v", "<leader>tr", ":PlamoTranslateReplace<CR>", { desc = "Replace with translation" })
+vim.keymap.set("n", "<leader>tr", ":PlamoTranslateReplace<CR>", { desc = "Replace with translation" })
 ```
 
 ## Configuration
@@ -96,6 +114,26 @@ The plugin works out of the box with default settings:
 ```lua
 require("plamo-translate-nvim").setup()
 ```
+
+### Advanced Configuration
+
+You can customize the plugin behavior:
+
+```lua
+require("plamo-translate-nvim").setup({
+    confirm_replace = false,     -- Show confirmation before replacing text
+    default_action = "display",  -- "display" or "replace" - default behavior
+    highlight_duration = 2000,   -- Duration (ms) to highlight selection during replacement
+})
+```
+
+#### Configuration Options
+
+| Option               | Type    | Default    | Description                                    |
+| -------------------- | ------- | ---------- | ---------------------------------------------- |
+| `confirm_replace`    | boolean | `false`    | Show confirmation prompt before text replacement |
+| `default_action`     | string  | `"display"` | Default behavior: `"display"` or `"replace"`   |
+| `highlight_duration` | number  | `2000`     | Highlight duration in milliseconds during replacement |
 
 ## Troubleshooting
 

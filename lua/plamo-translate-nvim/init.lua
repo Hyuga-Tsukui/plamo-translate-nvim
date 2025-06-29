@@ -1,6 +1,19 @@
 local M = {}
 
-function M.setup()
+-- Default configuration
+local default_config = {
+	confirm_replace = false, -- Whether to show confirmation prompt before replacing text
+	default_action = "display", -- "display" or "replace" - default behavior for translate_selection
+	highlight_duration = 2000, -- Duration in ms to highlight the selection during replacement
+}
+
+-- Global config storage
+M.config = {}
+
+function M.setup(opts)
+	-- Merge user config with defaults
+	M.config = vim.tbl_deep_extend("force", default_config, opts or {})
+
 	local ok, err_or_job = pcall(vim.system, { "plamo-translate", "-v" }, { text = true }, function(job)
 		if job.code == 0 then
 			vim.schedule(function()
@@ -23,6 +36,11 @@ function M.setup()
 	require("plamo-translate-nvim.server").setup()
 	require("plamo-translate-nvim.server").start()
 	require("plamo-translate-nvim.commands").setup()
+end
+
+-- Helper function to get config value
+function M.get_config(key)
+	return M.config[key]
 end
 
 return M
