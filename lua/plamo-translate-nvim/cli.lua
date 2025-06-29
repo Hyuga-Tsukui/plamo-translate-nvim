@@ -1,11 +1,44 @@
 local M = {}
 
 local function get_visual_selection_text()
-	local lines = vim.fn.getline("'<", "'>")
+	local start_pos = vim.fn.getpos("'<")
+	local end_pos = vim.fn.getpos("'>")
+	local start_line, start_col = start_pos[2], start_pos[3]
+	local end_line, end_col = end_pos[2], end_pos[3]
+	
+	if start_line == 0 or end_line == 0 then
+		return ""
+	end
+	
+	local lines = vim.fn.getline(start_line, end_line)
 	if type(lines) == "string" then
 		lines = { lines }
 	end
-	return table.concat(lines, "\n")
+	
+	if #lines == 0 then
+		return ""
+	end
+	
+	if #lines == 1 then
+		local line = lines[1]
+		local selection_end = end_col
+		if vim.o.selection == "inclusive" then
+			selection_end = end_col
+		else
+			selection_end = end_col - 1
+		end
+		return line:sub(start_col, selection_end)
+	else
+		lines[1] = lines[1]:sub(start_col)
+		local selection_end = end_col
+		if vim.o.selection == "inclusive" then
+			selection_end = end_col
+		else
+			selection_end = end_col - 1
+		end
+		lines[#lines] = lines[#lines]:sub(1, selection_end)
+		return table.concat(lines, "\n")
+	end
 end
 
 function M.translate_selection()
