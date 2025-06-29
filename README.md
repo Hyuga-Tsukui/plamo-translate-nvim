@@ -8,6 +8,8 @@ This plugin is a simple Neovim wrapper for the excellent [plamo-translate-cli](h
 
 **Full credit and gratitude goes to the PFN team and plamo-translate-cli contributors for creating the amazing translation tool that makes this plugin possible.**
 
+> **⚠️ Beta Warning**: This plugin is currently in beta and may have unstable behavior. Please report any issues you encounter.
+
 ## Features
 
 - 🔤 Translate selected text directly in Neovim
