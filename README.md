@@ -75,23 +75,24 @@ First, install the plamo-translate-cli tool:
 ### Basic Workflow
 
 #### Translation Display Mode
+
 1. Select text in visual mode
 2. Run `:PlamoTranslateSelection`
 3. View translation in the split window
 4. Use normal Vim operations (copy, edit, search, save) on the translation results
 
 #### Translation Replace Mode ✨
-1. Select text in visual mode  
+
+1. Select text in visual mode
 2. Run `:PlamoTranslateReplace`
 3. Selected text is automatically replaced with the translation result
-4. Visual feedback shows the replaced area with highlighting
 
 ### Commands
 
 | Command                      | Description                               |
 | ---------------------------- | ----------------------------------------- |
 | `:PlamoTranslateSelection`   | Translate currently selected text         |
-| `:PlamoTranslateReplace`     | **NEW:** Replace selected text with translation |
+| `:PlamoTranslateReplace`     | Replace selected text with translation    |
 | `:PlamoTranslateServerStart` | Manually start the plamo-translate server |
 | `:PlamoTranslateServerStop`  | Manually stop the plamo-translate server  |
 
@@ -121,26 +122,20 @@ You can customize the plugin behavior:
 
 ```lua
 require("plamo-translate-nvim").setup({
-    confirm_replace = false,     -- Show confirmation before replacing text
-    default_action = "display",  -- "display" or "replace" - default behavior
-    highlight_duration = 2000,   -- Duration (ms) to highlight selection during replacement
     progress_position = "center", -- "center", "top", "bottom", "cursor" - progress window position
 })
 ```
 
 #### Configuration Options
 
-| Option               | Type    | Default     | Description                                    |
-| -------------------- | ------- | ----------- | ---------------------------------------------- |
-| `confirm_replace`    | boolean | `false`     | Show confirmation prompt before text replacement |
-| `default_action`     | string  | `"display"` | Default behavior: `"display"` or `"replace"`   |
-| `highlight_duration` | number  | `2000`      | Highlight duration in milliseconds during replacement |
-| `progress_position`  | string  | `"center"`  | Progress window position: `"center"`, `"top"`, `"bottom"`, `"cursor"` |
+| Option              | Type   | Default    | Description                                                           |
+| ------------------- | ------ | ---------- | --------------------------------------------------------------------- |
+| `progress_position` | string | `"center"` | Progress window position: `"center"`, `"top"`, `"bottom"`, `"cursor"` |
 
 #### Progress Position Options
 
 - **`"center"`** (default): Display progress window at screen center
-- **`"top"`**: Display at the top of the screen  
+- **`"top"`**: Display at the top of the screen
 - **`"bottom"`**: Display above the command line
 - **`"cursor"`**: Display near the current cursor position (automatically adjusts if off-screen)
 
