@@ -20,23 +20,10 @@ local function get_visual_selection_text()
 	end
 	
 	if #lines == 1 then
-		local line = lines[1]
-		local selection_end = end_col
-		if vim.o.selection == "inclusive" then
-			selection_end = end_col
-		else
-			selection_end = end_col - 1
-		end
-		return line:sub(start_col, selection_end)
+		return lines[1]:sub(start_col, end_col)
 	else
 		lines[1] = lines[1]:sub(start_col)
-		local selection_end = end_col
-		if vim.o.selection == "inclusive" then
-			selection_end = end_col
-		else
-			selection_end = end_col - 1
-		end
-		lines[#lines] = lines[#lines]:sub(1, selection_end)
+		lines[#lines] = lines[#lines]:sub(1, end_col)
 		return table.concat(lines, "\n")
 	end
 end
