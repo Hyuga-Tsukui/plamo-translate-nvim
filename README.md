@@ -50,13 +50,13 @@ First, install the plamo-translate-cli tool:
 
 ```lua
 {
-	"Hyuga-Tsukui/plamo-translate-nvim",
+    "Hyuga-Tsukui/plamo-translate-nvim",
     keys = {
         {
             "<leader>ts",
             "<cmd>PlamoTranslateSelection<cr>",
             desc = "Translate Selection",
-            mode = "v"
+            mode = {"v", "n"}
         },
     },
 }
@@ -85,7 +85,8 @@ Add these to your configuration for quicker access:
 
 ```lua
 -- Example key mappings
-vim.keymap.set("v", "<leader>tr", ":PlamoTranslateSelection<CR>", { desc = "Translate selection" })
+vim.keymap.set("v", "<leader>ts", ":PlamoTranslateSelection<CR>", { desc = "Translate selection" })
+vim.keymap.set("n", "<leader>ts", ":PlamoTranslateSelection<CR>", , { desc = "Translate selection" })
 ```
 
 ## Configuration
