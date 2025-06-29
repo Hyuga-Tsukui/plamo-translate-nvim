@@ -30,6 +30,7 @@ Unlike simple popup notifications, this plugin displays translation results in a
 - **Search** within translation results using `/` and `?`
 - **Save** translations to files for future reference
 - **Use Vim's powerful text manipulation** features on translated content
+- **In-place replacement** - copy translated text and replace the original selection directly in your source buffer
 
 This approach integrates translation seamlessly into your existing Vim/Neovim workflow.
 
