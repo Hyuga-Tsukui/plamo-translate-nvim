@@ -1,31 +1,32 @@
 local M = {}
 
+---@return string
 local function get_visual_selection_text()
-	local start_pos = vim.fn.getpos("'<")
-	local end_pos = vim.fn.getpos("'>")
-	local start_line, start_col = start_pos[2], start_pos[3]
-	local end_line, end_col = end_pos[2], end_pos[3]
-	
-	if start_line == 0 or end_line == 0 then
-		return ""
-	end
-	
-	local lines = vim.fn.getline(start_line, end_line)
-	if type(lines) == "string" then
-		lines = { lines }
-	end
-	
-	if #lines == 0 then
-		return ""
-	end
-	
-	if #lines == 1 then
-		return lines[1]:sub(start_col, end_col)
-	else
-		lines[1] = lines[1]:sub(start_col)
-		lines[#lines] = lines[#lines]:sub(1, end_col)
-		return table.concat(lines, "\n")
-	end
+    local start_pos, end_pos, sel_type
+
+    local mode = vim.fn.mode()
+    if mode:match("[vV]") then
+        start_pos = vim.fn.getpos("v")
+        end_pos = vim.fn.getpos(".")
+        sel_type = vim.fn.visualmode()
+    else
+        start_pos = vim.fn.getpos("'<")
+        end_pos = vim.fn.getpos("'>")
+        sel_type = "v"
+    end
+    local lines = vim.fn.getregion(start_pos, end_pos, { type = sel_type })
+
+    local text
+
+    for _, line in ipairs(lines) do
+        if not text then
+            text = line
+        else
+            text = text .. "\n" .. line
+        end
+    end
+
+    return text
 end
 
 function M.translate_selection()
