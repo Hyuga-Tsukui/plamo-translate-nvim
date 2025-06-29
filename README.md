@@ -50,31 +50,16 @@ First, install the plamo-translate-cli tool:
 
 ```lua
 {
-  "Hyuga-Tsukui/plamo-translate-nvim",
-  config = function()
-    require("plamo-translate-nvim").setup()
-  end,
+	"Hyuga-Tsukui/plamo-translate-nvim",
+    keys = {
+        {
+            "<leader>ts",
+            "<cmd>PlamoTranslateSelection<cr>",
+            desc = "Translate Selection",
+            mode = "v"
+        },
+    },
 }
-```
-
-#### Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
-
-```lua
-use {
-  "Hyuga-Tsukui/plamo-translate-nvim",
-  config = function()
-    require("plamo-translate-nvim").setup()
-  end,
-}
-```
-
-#### Using [vim-plug](https://github.com/junegunn/vim-plug)
-
-```vim
-Plug 'Hyuga-Tsukui/plamo-translate-nvim'
-
-" Add to your init.vim/init.lua:
-lua require("plamo-translate-nvim").setup()
 ```
 
 ## Usage
