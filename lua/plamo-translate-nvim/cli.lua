@@ -68,7 +68,7 @@ local function get_visual_selection_with_position()
 	local mode = vim.fn.mode()
 	local start_pos, end_pos, sel_type
 
-	if mode:match("[vV]") then
+	if mode:match("[vV]") then
 		start_pos = vim.fn.getpos("v")
 		end_pos = vim.fn.getpos(".")
 		sel_type = vim.fn.visualmode()
@@ -131,12 +131,7 @@ function M.translate_and_replace()
 	local translation_result = ""
 	local has_error = false
 
-	-- Start progress display
 	ui.show_progress("🔄 Translating...")
-	
-	-- Highlight selection during translation
-	local ns_id = vim.api.nvim_create_namespace("plamo_translate_progress")
-	vim.api.nvim_buf_add_highlight(selection.bufnr, ns_id, "DiffChange", selection.start_row, selection.start_col, selection.end_col)
 
 	vim.system({ "plamo-translate", "--input", selection.text }, {
 		stdin = selection.text,
@@ -145,7 +140,6 @@ function M.translate_and_replace()
 				vim.schedule(function()
 					has_error = true
 					ui.update_progress("Translation error", false)
-					vim.api.nvim_buf_clear_namespace(selection.bufnr, ns_id, 0, -1)
 					vim.notify("Translate stdout error: " .. err, vim.log.levels.ERROR)
 				end)
 				return
@@ -159,16 +153,12 @@ function M.translate_and_replace()
 				vim.schedule(function()
 					has_error = true
 					ui.update_progress("Translation error", false)
-					vim.api.nvim_buf_clear_namespace(selection.bufnr, ns_id, 0, -1)
 					vim.notify("Translate stderr: " .. (err or data), vim.log.levels.ERROR)
 				end)
 			end
 		end,
 	}, function(job)
 		vim.schedule(function()
-			-- Clear selection highlight
-			vim.api.nvim_buf_clear_namespace(selection.bufnr, ns_id, 0, -1)
-			
 			if has_error then
 				return
 			end
@@ -196,25 +186,12 @@ function M.translate_and_replace()
 						lines
 					)
 				end)
-				
+
 				if not ok then
 					ui.update_progress("Replacement failed", false)
 					vim.notify("Failed to replace text: " .. tostring(err), vim.log.levels.ERROR)
 				else
 					ui.update_progress("Translation completed", true)
-					-- Highlight the replaced text briefly
-					local replaced_ns_id = vim.api.nvim_create_namespace("plamo_translate_result")
-					local end_row = selection.start_row + #lines - 1
-					local end_col = selection.sel_type == "V" and 0 or #lines[#lines]
-					
-					vim.api.nvim_buf_add_highlight(selection.bufnr, replaced_ns_id, "DiffAdd", selection.start_row, selection.start_col, end_col)
-					
-					-- Clear result highlight after 2 seconds
-					vim.defer_fn(function()
-						if vim.api.nvim_buf_is_valid(selection.bufnr) then
-							vim.api.nvim_buf_clear_namespace(selection.bufnr, replaced_ns_id, 0, -1)
-						end
-					end, 2000)
 				end
 			else
 				ui.update_progress("Translation failed", false)
