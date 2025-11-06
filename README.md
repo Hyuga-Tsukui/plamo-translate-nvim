@@ -2,8 +2,6 @@
 
 A Neovim plugin that provides seamless integration with [plamo-translate-cli](https://github.com/pfnet/plamo-translate-cli).
 
-## About
-
 This plugin is a simple Neovim wrapper for the excellent [plamo-translate-cli](https://github.com/pfnet/plamo-translate-cli) tool developed by Preferred Networks (PFN). All translation functionality is powered by plamo-translate-cli - this plugin merely provides a convenient interface for Neovim users.
 
 **Full credit and gratitude goes to the PFN team and plamo-translate-cli contributors for creating the amazing translation tool that makes this plugin possible.**
